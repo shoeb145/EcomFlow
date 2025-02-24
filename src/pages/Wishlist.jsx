@@ -1,11 +1,7 @@
-import React from 'react';
+import React from "react";
 
 function Wishlist(props) {
-    return (
-        <div>
-            
-        </div>
-    );
+  return <div>hello</div>;
 }
 
 export default Wishlist;

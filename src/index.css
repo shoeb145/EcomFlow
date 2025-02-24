@@ -1,11 +1,13 @@
 @import url("https://fonts.googleapis.com/css2?family=Iceberg&display=swap");
+@import url("https://fonts.googleapis.com/css2?family=Sigmar&display=swap");
 @import url("https://fonts.googleapis.com/css2?family=Roboto:ital,wght@0,100..900;1,100..900&display=swap");
 @import "tailwindcss";
 :root {
   --font-roboto: "Iceberg", sans-serif;
   --font-roboto1: "Roboto", sans-serif;
+  --font-Sigmar: "Sigmar", sans-serif;
   --bg-banner: #fff2f2;
-  --bg-banner1: #edc5c5;
+  --bg-banner1: #d6b8b8;
 }
 
 .font-roboto {
@@ -13,6 +15,9 @@
 }
 .font-roboto1 {
   font-family: var(--font-roboto1) !important;
+}
+.font-Sigmar {
+  font-family: var(--font-Sigmar) !important;
 }
 .bg-banner {
   background-color: var(--bg-banner) !important;
