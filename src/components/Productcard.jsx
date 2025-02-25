@@ -4,10 +4,10 @@ import { BrowserRouter as Router, Link, useNavigate } from "react-router-dom";
 function Productcard({ product, handleCart }) {
   const navigate = useNavigate();
   return (
-    <div className="w-60 flex items-center flex-col mt-5 ">
+    <div className="w-60 flex items-center flex-col mt-5  ">
       <div
         onClick={() => {
-          navigate("/ProductDetail");
+          navigate("/ProductDetail", { state: product });
         }}
         className="flex flex-col rounded-md   p-10  justify-center border  border-gray-300"
       >

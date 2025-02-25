@@ -6,7 +6,7 @@ import { Outlet } from "react-router-dom";
 
 function Home(props) {
   const [data, setData] = useState(null);
-  const [oldCart, setOldCart] = useState([]);
+
   const [cartdata, setCartdata] = useState([]);
   useEffect(() => {
     async function fetchData() {
@@ -23,21 +23,40 @@ function Home(props) {
   }, []);
   const handleCart = async (id) => {
     if (id == "") return;
-    const prevcart = JSON.parse(localStorage.getItem("cartdata"));
+    let prevcart;
+    if (JSON.parse(localStorage.getItem("cartdata"))) {
+      prevcart = JSON.parse(localStorage.getItem("cartdata"));
+    } else {
+      prevcart = [];
+    }
+    console.log(prevcart, "don");
 
     try {
       const URl = `https://fakestoreapi.com/products/${id}`;
       const res = await axios.get(URl);
       const find = res.data;
 
-      // const exsesting = prevcart.find((item) => item.id === find.id);
-      // if (exsesting) {
-      //   return prevcart.map((i) => {
-      //     i.id === find.id?
-      //   });
-      // }
-
-      setCartdata([...cartdata, find]);
+      const exsesting = prevcart.find((item) => item.id === find.id);
+      const nonexexsesting = prevcart.filter((item) => item.id != find.id);
+      console.log(exsesting, " don2");
+      if (exsesting) {
+        prevcart.map((item) => {
+          return item.id === find.id
+            ? (prevcart = {
+                ...nonexexsesting,
+                ...item,
+                quantity: item.quantity + 1,
+              })
+            : item;
+        });
+        if ((prevcart.length = 1)) {
+          setCartdata([prevcart]);
+        } else {
+          setCartdata([...prevcart]);
+        }
+      } else {
+        setCartdata([...prevcart, { ...find, quantity: 1 }]);
+      }
     } catch (error) {
       console.log(error);
     }
@@ -47,17 +66,10 @@ function Home(props) {
       return;
     }
 
-    const prevcart = JSON.parse(localStorage.getItem("cartdata"));
-    if (prevcart === null) {
-      localStorage.setItem("cartdata", JSON.stringify(cartdata));
-      return;
-    }
-
-    const newdata = prevcart.concat(cartdata);
-    localStorage.setItem("cartdata", JSON.stringify(newdata));
+    localStorage.setItem("cartdata", JSON.stringify(cartdata));
   }, [cartdata, setCartdata]);
   console.log(cartdata);
-  console.log(oldCart, "me");
+
   return (
     <div className="bg-banner1  pt-5 ">
       <div className="pt-6 pb-0 mx-5">
