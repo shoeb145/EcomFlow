@@ -13,62 +13,46 @@ function Home(props) {
       try {
         const res = await axios.get("https://fakestoreapi.com/products");
         setData(res.data);
-
-        console.log(res);
       } catch (err) {
         console.log(err);
       }
     }
     fetchData();
   }, []);
-  const handleCart = async (id) => {
+  const handleCart = (id) => {
     if (id == "") return;
-    let prevcart;
-    if (JSON.parse(localStorage.getItem("cartdata"))) {
-      prevcart = JSON.parse(localStorage.getItem("cartdata"));
-    } else {
-      prevcart = [];
-    }
-    console.log(prevcart, "don");
+    setCartdata((prevCart) => {
+      let updatedCart = Array.isArray(prevCart) ? [...prevCart] : [];
 
-    try {
-      const URl = `https://fakestoreapi.com/products/${id}`;
-      const res = await axios.get(URl);
-      const find = res.data;
+      // Find the existing item in the cart
+      const itemIndex = updatedCart.findIndex((item) => item.id === id);
 
-      const exsesting = prevcart.find((item) => item.id === find.id);
-      const nonexexsesting = prevcart.filter((item) => item.id != find.id);
-      console.log(exsesting, " don2");
-      if (exsesting) {
-        prevcart.map((item) => {
-          return item.id === find.id
-            ? (prevcart = {
-                ...nonexexsesting,
-                ...item,
-                quantity: item.quantity + 1,
-              })
-            : item;
-        });
-        if ((prevcart.length = 1)) {
-          setCartdata([prevcart]);
-        } else {
-          setCartdata([...prevcart]);
-        }
+      if (itemIndex !== -1) {
+        // If item exists, increase the quantity
+        updatedCart[itemIndex] = {
+          ...updatedCart[itemIndex],
+          quantity: updatedCart[itemIndex].quantity + 1,
+        };
       } else {
-        setCartdata([...prevcart, { ...find, quantity: 1 }]);
-      }
-    } catch (error) {
-      console.log(error);
-    }
-  };
-  useEffect(() => {
-    if (cartdata.length == 0) {
-      return;
-    }
+        // Find the product from `data` instead of making an API call
+        const newProduct = data.find((product) => product.id === id);
+        if (!newProduct) return updatedCart; // Exit if product not found
 
-    localStorage.setItem("cartdata", JSON.stringify(cartdata));
-  }, [cartdata, setCartdata]);
-  console.log(cartdata);
+        // Add the product with quantity 1
+        updatedCart.push({ ...newProduct, quantity: 1 });
+      }
+
+      // Save to localStorage
+      localStorage.setItem("cartdata", JSON.stringify(updatedCart));
+
+      return updatedCart; // Update state
+    });
+  };
+
+  useEffect(() => {
+    const prev = JSON.parse(localStorage.getItem("cartdata")) || [];
+    setCartdata(prev);
+  }, []);
 
   return (
     <div className="bg-banner1  pt-5 ">

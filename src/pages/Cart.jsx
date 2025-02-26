@@ -1,8 +1,11 @@
 import React, { useEffect, useState } from "react";
-// import { checkCart } from "../utils";
+
 import Cartitem from "../components/Cartitem";
+import { calcSubtotal, format2Decimals, taxAmount, total } from "../utils";
+import { useNavigate } from "react-router-dom";
 
 function Cart(props) {
+  const navigate = useNavigate();
   const [cartdata, setCartdata] = useState([]);
   useEffect(() => {
     const data = JSON.parse(localStorage.getItem("cartdata"));
@@ -10,7 +13,62 @@ function Cart(props) {
       setCartdata(data);
     }
   }, []);
-  console.log(cartdata, "in");
+
+  const deleteCartItem = (id) => {
+    const index = cartdata.findIndex((item) => item.id === id);
+    const selectedItem = cartdata.find((item) => item.id === id);
+    const slected = selectedItem.quantity;
+
+    if (slected) {
+      setCartdata((prevCart) => {
+        let updatedCart = Array.isArray(prevCart) ? [...prevCart] : [];
+
+        updatedCart.splice(index, 1);
+
+        localStorage.setItem("cartdata", JSON.stringify(updatedCart));
+
+        return updatedCart;
+      });
+    }
+  };
+
+  const decreaseCart = (id) => {
+    const index = cartdata.findIndex((item) => item.id === id);
+    const selectedItem = cartdata.find((item) => item.id === id);
+    const slected = selectedItem.quantity;
+
+    setCartdata((prevCart) => {
+      let updatedCart = Array.isArray(prevCart) ? [...prevCart] : [];
+      if (slected == 1) {
+        updatedCart.splice(index, 1);
+      } else {
+        updatedCart[index] = {
+          ...updatedCart[index],
+          quantity: updatedCart[index].quantity - 1,
+        };
+      }
+      localStorage.setItem("cartdata", JSON.stringify(updatedCart));
+
+      return updatedCart;
+    });
+  };
+  const increaseCart = (id) => {
+    const index = cartdata.findIndex((item) => item.id === id);
+    setCartdata((prevCart) => {
+      let updatedCart = Array.isArray(prevCart) ? [...prevCart] : [];
+
+      if (index >= 0) {
+        updatedCart[index] = {
+          ...updatedCart[index],
+          quantity: updatedCart[index].quantity + 1,
+        };
+      }
+      localStorage.setItem("cartdata", JSON.stringify(updatedCart));
+
+      return updatedCart;
+    });
+  };
+
   return (
     <div className="h-screen ">
       <div className="flex  ">
@@ -19,22 +77,9 @@ function Cart(props) {
           xmlns="http://www.w3.org/2000/svg"
           fill="none"
           viewBox="0 0 24 24"
-          strokeWidth="1.5"
-          stroke="currentColor"
-          className="size-6 m-4 my-4 w-6"
-        >
-          <path
-            strokeLinecap="round"
-            strokeLinejoin="round"
-            d="M21 8.25c0-2.485-2.099-4.5-4.688-4.5-1.935 0-3.597 1.126-4.312 2.733-.715-1.607-2.377-2.733-4.313-2.733C5.1 3.75 3 5.765 3 8.25c0 7.22 9 12 9 12s9-4.78 9-12Z"
-          />
-        </svg>
-        <svg
-          xmlns="http://www.w3.org/2000/svg"
-          fill="none"
-          viewBox="0 0 24 24"
           strokeWidth={1.5}
           stroke="currentColor"
+          onClick={() => navigate("/")}
           className="size-6 m-4 my-4 w-6"
         >
           <path
@@ -45,39 +90,42 @@ function Cart(props) {
         </svg>
         <h4 className="self-center text-lg w-full  ">Cart</h4>
       </div>
-      <Cartitem />
-      <hr className="mx-2 text-gray-400 " />
-      <Cartitem />
-      <hr className="mx-2 text-gray-400 " />
-      <Cartitem />
-      <hr className="mx-2 text-gray-400 " />
+      {cartdata &&
+        cartdata.map((data) => {
+          return (
+            <div key={data.id}>
+              <Cartitem
+                deleteCartItem={deleteCartItem}
+                decreaseCart={decreaseCart}
+                increaseCart={increaseCart}
+                data={data}
+              />
+              <hr className="mx-2 text-gray-400 " />
+            </div>
+          );
+        })}
+
       <div className="mt-10 mx-2">
         <div className="flex justify-between pb-2 ">
-          <p className="text-gray-400">Sub total</p> <h4>$233.45</h4>
+          <p className="text-gray-400">Sub total</p>{" "}
+          <h4>${format2Decimals(calcSubtotal(cartdata))} </h4>
         </div>
 
         <div className="flex justify-between pb-2 ">
           <p className="text-gray-400">Shipping</p> <h4>$20</h4>
         </div>
         <div className="flex justify-between pb-2">
-          <p className="text-gray-400">Tax(18%)</p> <h4>$20</h4>
+          <p className="text-gray-400">Tax(10%)</p>{" "}
+          <h4>${format2Decimals(taxAmount(calcSubtotal(cartdata)))}</h4>
         </div>
         <div className="flex justify-between pt-2 pr-2 ">
           <p className="font-medium">Total</p>{" "}
-          <h4 className="text-xl font-bold">$20</h4>
+          <h4 className="text-xl font-bold">
+            {" "}
+            ${format2Decimals(total(cartdata))}
+          </h4>
         </div>
       </div>
-
-      {/* {cartdata &&
-        cartdata.map((data, i) => {
-          return <div key={i}>{data?.data?.title}</div>;
-        })}
-      <div className="bg-amber-700">
-        {checkCart(cartdata) &&
-          checkCart(cartdata)?.map((data, i) => {
-            return <div key={i}>{data?.data?.title}</div>;
-          })}
-      </div> */}
     </div>
   );
 }

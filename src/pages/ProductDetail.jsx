@@ -1,10 +1,34 @@
-import React from "react";
+import React, { useState } from "react";
 import { useLocation } from "react-router-dom";
+import Wishlist from "./Wishlist";
+import { useEffect } from "react";
 
-function ProductDetail(props) {
+function ProductDetail({}) {
+  const [wishlist, setWishlist] = useState([]);
   const location = useLocation();
   const product = location.state;
-  console.log(product);
+  const addWishlist = (product) => {
+    setWishlist((prevWish) => {
+      const upgarded = Array.isArray(prevWish) ? [...prevWish] : [prevWish];
+
+      const index = upgarded.findIndex((item) => item.id === product.id);
+      console.log(index, "guys its here");
+      if (!(index === -1)) {
+        upgarded.splice(index, 1);
+        localStorage.setItem("Wishlist", JSON.stringify(upgarded));
+        return upgarded;
+      }
+
+      upgarded.push({ ...product });
+      localStorage.setItem("Wishlist", JSON.stringify(upgarded));
+      return upgarded;
+    });
+  };
+  useEffect(() => {
+    const data = JSON.parse(localStorage.getItem("Wishlist")) || [];
+    setWishlist(data);
+  }, []);
+  console.log(wishlist);
   return (
     <div className="h-screen">
       <svg
@@ -49,6 +73,7 @@ function ProductDetail(props) {
             viewBox="0 0 24 24"
             strokeWidth="1.5"
             stroke="currentColor"
+            onClick={() => addWishlist(product)}
             className="size-12 self-center shadow-2xl p-2 rounded-full fill-white border-0"
           >
             <path
