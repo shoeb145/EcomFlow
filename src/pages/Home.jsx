@@ -55,10 +55,10 @@ function Home(props) {
   }, []);
 
   return (
-    <div className="bg-banner1  pt-5 ">
+    <div className=" pt-5 ">
       <div className="pt-6 pb-0 mx-5">
         <div className="h-135 bg-banner">
-          <Navbar cartdata={cartdata} />
+          <Navbar data={data} />
           <div className="flex justify-items-start h-122 ">
             <div className="w-50 self-center">
               <h3 className=" self-center font-Sigmar text-4xl p-4 pt-20">
@@ -71,7 +71,7 @@ function Home(props) {
           </div>
         </div>
       </div>
-      <div className="bg-white  py-3 mx-5 pb-5 mb-5 flex flex-col items-center">
+      <div className=" py-3 mx-5 pb-5 mb-5 flex flex-col items-center">
         {data &&
           data.map((product) => {
             return (

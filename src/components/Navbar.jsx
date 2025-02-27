@@ -1,12 +1,104 @@
-import React from "react";
+import React, { useEffect, useState } from "react";
+import Productcard from "./Productcard";
+import { debounce } from "lodash";
+import { useRef } from "react";
 import banner from "../assets/banner1.jpg";
 import { BrowserRouter as Router, Link, useNavigate } from "react-router-dom";
 
-function Navbar({ cartdata }) {
+function Navbar({ data }) {
+  const [showMyModel, setShowMyModel] = useState(false);
+  const [product, setProduct] = useState([]);
+  const [searchvalue, setSearchValue] = useState("");
+  const [fildata, setFildata] = useState([]);
   const navigate = useNavigate();
+  function showModel() {
+    setShowMyModel(true);
+  }
+
+  const handleDebounce = useRef(
+    debounce((value) => {
+      handlesearch(value);
+    }, 500)
+  ).current;
+
+  useEffect(() => {
+    return () => {
+      handleDebounce.cancel();
+    };
+  }, [handleDebounce]);
+
+  function handleInput(e) {
+    let value = e.target.value;
+    setSearchValue(value);
+    handleDebounce(value);
+  }
+  const handlesearch = (value) => {
+    const searchinput = value.toLowerCase();
+    if (searchinput.length <= 1) {
+      return;
+    }
+    console.log(data, "dfsdf");
+
+    const of = data.filter((item) => {
+      return (
+        item.category.toLowerCase().includes(searchinput) ||
+        item.title.toLowerCase().includes(searchinput)
+      );
+    });
+    console.log(of);
+    setFildata(of);
+  };
+
+  useEffect(() => {
+    if (showMyModel) {
+      document.body.classList.add("overflow-hidden");
+    } else {
+      document.body.classList.remove("overflow-hidden");
+    }
+    return () => {
+      document.body.classList.remove("overflow-hidden");
+    };
+  }, [showMyModel]);
 
   return (
     <div className="">
+      {showMyModel && (
+        <div className="fixed top-0 left-0 h-screen bg-white overflow-x-scroll w-full flex flex-col items-center ">
+          <div className=" mt-5 flex flex-col items-center w-full ">
+            <div className="flex border rounded-2xl">
+              {" "}
+              <svg
+                xmlns="http://www.w3.org/2000/svg"
+                fill="none"
+                viewBox="0 0 24 24"
+                strokeWidth={1.5}
+                stroke="currentColor"
+                onClick={() => showModel()}
+                className="size-6 self-center mx-2 "
+              >
+                <path
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  d="m21 21-5.197-5.197m0 0A7.5 7.5 0 1 0 5.196 5.196a7.5 7.5 0 0 0 10.607 10.607Z"
+                />
+              </svg>
+              <input
+                type="search"
+                placeholder="Type here"
+                value={searchvalue}
+                onChange={(e) => handleInput(e)}
+                className="border-none focus:outline-none w-full self-center h-8"
+              />
+            </div>
+          </div>
+          <div>
+            {fildata &&
+              fildata.map((product) => {
+                return <Productcard key={product?.id} product={product} />;
+              })}
+          </div>
+        </div>
+      )}
       <div className="flex justify-between bg-banner h-18">
         <p className="font-roboto text-3xl pl-3 self-center">
           {" "}
@@ -20,6 +112,7 @@ function Navbar({ cartdata }) {
             viewBox="0 0 24 24"
             strokeWidth={1.5}
             stroke="currentColor"
+            onClick={() => showModel()}
             className="size-8 self-center "
           >
             <path
