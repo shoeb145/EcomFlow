@@ -2,8 +2,8 @@ import React from "react";
 
 function Cartitem({ data, deleteCartItem, decreaseCart, increaseCart }) {
   return (
-    <div className="flex justify-center mb-4 ">
-      <div className=" flex flex-col justify-center rounded-md  ml-4 h-34 min-w-30    shadow-2xl items-center ">
+    <div className="flex justify-center mb-4 lg:mx-20">
+      <div className="dark:opacity-70  dark:bg-gray-50 flex flex-col justify-center rounded-md  ml-4 h-34 min-w-30  md:w-40   shadow-2xl items-center mr-2  ">
         <figure className=" ">
           <img
             className="size-25 object-contain self-center my-auto "
@@ -12,8 +12,8 @@ function Cartitem({ data, deleteCartItem, decreaseCart, increaseCart }) {
           />
         </figure>
       </div>
-      <div className="pl-2 flex flex-col justify-center">
-        <div className="flex ">
+      <div className="pl-2 flex flex-col justify-center md:w-110 w-80 mr-2">
+        <div className="flex justify-between ">
           <h4 className=" font-bold text-base ">{data.title}</h4>
           <svg
             xmlns="http://www.w3.org/2000/svg"
@@ -21,7 +21,7 @@ function Cartitem({ data, deleteCartItem, decreaseCart, increaseCart }) {
             viewBox="0 0 24 24"
             strokeWidth={1.5}
             stroke="currentColor"
-            className="size-5 ml-0.5 mr-2 text-gray-500 shrink-0"
+            className="size-5 ml-0.5  text-gray-500 justify-end shrink-0 self-center"
             onClick={() => deleteCartItem(data.id)}
           >
             <path
@@ -31,10 +31,12 @@ function Cartitem({ data, deleteCartItem, decreaseCart, increaseCart }) {
             />
           </svg>
         </div>
-        <p className="text-gray-400 text-sm">Quanitity: {data.quantity}</p>
+        <p className="text-gray-400 text-sm flex self-end">
+          Quanitity: {data.quantity}
+        </p>
         <div className="flex justify-between mt-5">
           <h3 className="font-bold">${data.price}</h3>
-          <div className="flex mr-2">
+          <div className="flex ">
             <svg
               xmlns="http://www.w3.org/2000/svg"
               fill="none"
@@ -42,7 +44,7 @@ function Cartitem({ data, deleteCartItem, decreaseCart, increaseCart }) {
               strokeWidth={1.5}
               stroke="currentColor"
               onClick={() => decreaseCart(data.id)}
-              className="size-6 p-1 rounded-full bg-gray-200"
+              className="size-6 p-1 rounded-full dark:bg-base-100 bg-gray-200"
             >
               <path strokeLinecap="round" strokeLinejoin="round" d="M5 12h14" />
             </svg>
@@ -54,7 +56,7 @@ function Cartitem({ data, deleteCartItem, decreaseCart, increaseCart }) {
               strokeWidth={1.5}
               stroke="currentColor"
               onClick={() => increaseCart(data.id)}
-              className="size-6 p-1 rounded-full bg-gray-200  "
+              className="size-6 p-1 rounded-full dark:bg-base-100 bg-gray-200  "
             >
               <path
                 strokeLinecap="round"

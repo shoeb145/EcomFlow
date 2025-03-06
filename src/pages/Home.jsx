@@ -1,13 +1,14 @@
 import React, { useEffect, useState } from "react";
 import Navbar from "../components/Navbar";
+import banner from "../assets/bg2.png";
 import Productcard from "../components/Productcard";
 import axios from "axios";
 import { Outlet } from "react-router-dom";
+import Footer from "../components/Footer";
 
 function Home(props) {
   const [data, setData] = useState(null);
 
-  const [cartdata, setCartdata] = useState([]);
   useEffect(() => {
     async function fetchData() {
       try {
@@ -19,70 +20,42 @@ function Home(props) {
     }
     fetchData();
   }, []);
-  const handleCart = (id) => {
-    if (id == "") return;
-    setCartdata((prevCart) => {
-      let updatedCart = Array.isArray(prevCart) ? [...prevCart] : [];
-
-      // Find the existing item in the cart
-      const itemIndex = updatedCart.findIndex((item) => item.id === id);
-
-      if (itemIndex !== -1) {
-        // If item exists, increase the quantity
-        updatedCart[itemIndex] = {
-          ...updatedCart[itemIndex],
-          quantity: updatedCart[itemIndex].quantity + 1,
-        };
-      } else {
-        // Find the product from `data` instead of making an API call
-        const newProduct = data.find((product) => product.id === id);
-        if (!newProduct) return updatedCart; // Exit if product not found
-
-        // Add the product with quantity 1
-        updatedCart.push({ ...newProduct, quantity: 1 });
-      }
-
-      // Save to localStorage
-      localStorage.setItem("cartdata", JSON.stringify(updatedCart));
-
-      return updatedCart; // Update state
-    });
-  };
-
-  useEffect(() => {
-    const prev = JSON.parse(localStorage.getItem("cartdata")) || [];
-    setCartdata(prev);
-  }, []);
 
   return (
-    <div className=" pt-5 ">
+    <div className=" pt-5 lg:p-6 lg:pb-0">
       <div className="pt-6 pb-0 mx-5">
-        <div className="h-135 bg-banner">
+        <div className="h-135  bg-amber-600 dark:bg-gray-600 rounded-xl">
           <Navbar data={data} />
-          <div className="flex justify-items-start h-122 ">
-            <div className="w-50 self-center">
-              <h3 className=" self-center font-Sigmar text-4xl p-4 pt-20">
-                Where Fashion Meets Convenience.
-              </h3>
-            </div>
-            <div className=" absolute  size-60 ">
-              {/* <img src={banner} alt="" className="object-cover " /> */}
+          <div className="flex justify-items-start h-122   ">
+            <div className="flex justify-between w-500">
+              <div className="w-50 self-center">
+                <h3 className=" self-center font-Sigmar text-4xl p-4 pt-20">
+                  Where Fashion Meets Convenience.
+                </h3>
+              </div>
+              <div className="md:flex content-end  pt-32 hidden ">
+                <img
+                  src={banner}
+                  alt=""
+                  className="size-80 object-cover self-center"
+                />
+              </div>
             </div>
           </div>
         </div>
       </div>
-      <div className=" py-3 mx-5 pb-5 mb-5 flex flex-col items-center">
-        {data &&
+      <div className=" py-3 pb-0 mb-0 mx-5  flex flex-col lg:grid-cols-3 lg:grid items-center lg:place-items-center md:grid md:grid-cols-2 md:place-items-center mt-2">
+        {data && data ? (
           data.map((product) => {
-            return (
-              <Productcard
-                key={product?.id}
-                handleCart={handleCart}
-                product={product}
-              />
-            );
-          })}
+            return <Productcard key={product?.id} product={product} />;
+          })
+        ) : (
+          <div className="h-screen flex mt-4 mx-auto w-100 text-2xl">
+            <h1 className="">loading....</h1>
+          </div>
+        )}
       </div>
+      <Footer />
     </div>
   );
 }

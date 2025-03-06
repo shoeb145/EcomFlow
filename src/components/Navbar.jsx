@@ -1,31 +1,40 @@
 import React, { useEffect, useState } from "react";
 import Productcard from "./Productcard";
 import { debounce } from "lodash";
-import { useRef } from "react";
+import { throttle } from "lodash";
+import { useCallback } from "react";
 import banner from "../assets/banner1.jpg";
 import { BrowserRouter as Router, Link, useNavigate } from "react-router-dom";
 
 function Navbar({ data }) {
   const [showMyModel, setShowMyModel] = useState(false);
-  const [product, setProduct] = useState([]);
+  const [btnfillter, setBtnfillter] = useState({
+    "men's clothing": false,
+    "women's clothing": false,
+    electronics: false,
+    jewelery: false,
+  });
   const [searchvalue, setSearchValue] = useState("");
+  const [filterdata, setFilterdata] = useState([]);
   const [fildata, setFildata] = useState([]);
   const navigate = useNavigate();
   function showModel() {
-    setShowMyModel(true);
+    setShowMyModel(!showMyModel);
   }
 
-  const handleDebounce = useRef(
+  const handleDebounce = useCallback(
     debounce((value) => {
       handlesearch(value);
-    }, 500)
-  ).current;
+    }, 500),
+    [data]
+  );
 
-  useEffect(() => {
-    return () => {
-      handleDebounce.cancel();
-    };
-  }, [handleDebounce]);
+  const handlethrotte = useCallback(
+    throttle((value) => {
+      filterBtn(value);
+    }, 500),
+    [data, fildata, btnfillter]
+  );
 
   function handleInput(e) {
     let value = e.target.value;
@@ -35,9 +44,8 @@ function Navbar({ data }) {
   const handlesearch = (value) => {
     const searchinput = value.toLowerCase();
     if (searchinput.length <= 1) {
-      return;
+      return setFildata([]);
     }
-    console.log(data, "dfsdf");
 
     const of = data.filter((item) => {
       return (
@@ -45,9 +53,50 @@ function Navbar({ data }) {
         item.title.toLowerCase().includes(searchinput)
       );
     });
-    console.log(of);
+
     setFildata(of);
   };
+
+  function filterBtn(value) {
+    if (btnfillter[value] == true) {
+      return setBtnfillter((prev) => ({ ...prev, [value]: false }));
+    }
+
+    if (btnfillter[value] == false) {
+      let filter;
+      if (fildata.length > 0) {
+        filter = fildata.filter((item) => {
+          return item.category.toLowerCase() === value;
+        });
+
+        const type = {
+          "men's clothing": false,
+          "women's clothing": false,
+          electronics: false,
+          jewelery: false,
+        };
+
+        setBtnfillter({ ...type, [value]: true });
+
+        return setFilterdata(filter);
+      }
+
+      filter = data.filter((item) => {
+        return item.category.toLowerCase() === value;
+      });
+
+      const type = {
+        "men's clothing": false,
+        "women's clothing": false,
+        electronics: false,
+        jewelery: false,
+      };
+
+      setBtnfillter({ ...type, [value]: true });
+
+      return setFilterdata(filter);
+    }
+  }
 
   useEffect(() => {
     if (showMyModel) {
@@ -63,44 +112,142 @@ function Navbar({ data }) {
   return (
     <div className="">
       {showMyModel && (
-        <div className="fixed top-0 left-0 h-screen bg-white overflow-x-scroll w-full flex flex-col items-center ">
-          <div className=" mt-5 flex flex-col items-center w-full ">
-            <div className="flex border rounded-2xl">
-              {" "}
-              <svg
-                xmlns="http://www.w3.org/2000/svg"
-                fill="none"
-                viewBox="0 0 24 24"
-                strokeWidth={1.5}
-                stroke="currentColor"
-                onClick={() => showModel()}
-                className="size-6 self-center mx-2 "
-              >
-                <path
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                  d="m21 21-5.197-5.197m0 0A7.5 7.5 0 1 0 5.196 5.196a7.5 7.5 0 0 0 10.607 10.607Z"
+        <div className="fixed top-0 left-0 h-dvh bg-white dark:bg-base-100 overflow-x-scroll w-full flex flex-col items-center z-10 lg:m-3">
+          <div className=" mt-4 flex flex-col items-center w-full ">
+            <div className="flex self-center">
+              <div className="absolute flex items-center  mr-8 top-5 left-4 md:left-7">
+                <svg
+                  xmlns="http://www.w3.org/2000/svg"
+                  fill="none"
+                  viewBox="0 0 24 24"
+                  strokeWidth={1.5}
+                  stroke="currentColor"
+                  onClick={() => showModel()}
+                  className="size-6 self-center"
+                >
+                  <path
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    d="M10.5 19.5 3 12m0 0 7.5-7.5M3 12h18"
+                  />
+                </svg>
+              </div>
+              <div className="flex border rounded-2xl w-60 md:w-100">
+                {" "}
+                <svg
+                  xmlns="http://www.w3.org/2000/svg"
+                  fill="none"
+                  viewBox="0 0 24 24"
+                  strokeWidth={1.5}
+                  stroke="currentColor"
+                  onClick={() => showModel()}
+                  className="size-6 self-center mx-2 "
+                >
+                  <path
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    d="m21 21-5.197-5.197m0 0A7.5 7.5 0 1 0 5.196 5.196a7.5 7.5 0 0 0 10.607 10.607Z"
+                  />
+                </svg>
+                <input
+                  type="search"
+                  placeholder="Type here"
+                  value={searchvalue}
+                  onChange={(e) => handleInput(e)}
+                  className="border-none focus:outline-none w-full self-center h-8 pr-1 "
                 />
-              </svg>
-              <input
-                type="search"
-                placeholder="Type here"
-                value={searchvalue}
-                onChange={(e) => handleInput(e)}
-                className="border-none focus:outline-none w-full self-center h-8"
-              />
+              </div>
+            </div>
+            <div className="flex mt-2">
+              <div
+                className={`  ${
+                  btnfillter["men's clothing"]
+                    ? "bg-amber-700 border-2"
+                    : "bg-gray-400 dark:bg-gray-600 "
+                } mr-2 rounded-2xl w-15 h-6 p-1 flex justify-center `}
+                onClick={() => handlethrotte("men's clothing")}
+              >
+                <button type="button" className="self-center text-xs">
+                  men
+                </button>
+              </div>
+
+              <div
+                className={`  ${
+                  btnfillter["women's clothing"]
+                    ? "bg-amber-700 border-2"
+                    : "bg-gray-400 dark:bg-gray-600 "
+                } mr-2 rounded-2xl w-15 h-6 p-1 flex justify-center `}
+                onClick={() => handlethrotte("women's clothing")}
+              >
+                <button type="button" className="self-center text-xs">
+                  women
+                </button>
+              </div>
+
+              <div
+                className={`  ${
+                  btnfillter["jewelery"]
+                    ? "bg-amber-700 border-2"
+                    : "bg-gray-400 dark:bg-gray-600 "
+                } mr-2 rounded-2xl w-15 h-6 p-1 flex justify-center `}
+                onClick={() => handlethrotte("jewelery")}
+              >
+                <button type="button" className="self-center text-xs">
+                  jewelery
+                </button>
+              </div>
+              <div
+                className={`  ${
+                  btnfillter["electronics"]
+                    ? "bg-amber-700 border-2"
+                    : "bg-gray-400 dark:bg-gray-600 "
+                } mr-2 rounded-2xl w-17 h-6 p-1 flex justify-center `}
+                onClick={() => handlethrotte("electronics")}
+              >
+                <button type="button" className="self-center text-xs">
+                  electronics
+                </button>
+              </div>
             </div>
           </div>
-          <div>
-            {fildata &&
+          <div className="py-3 pb-0 mb-0  mx-5  flex flex-col lg:grid-cols-3 lg:grid items-center lg:place-items-center md:grid md:grid-cols-2 md:place-items-center mt-2">
+            {btnfillter["men's clothing"] ||
+            btnfillter["women's clothing"] ||
+            btnfillter["jewelery"] ||
+            btnfillter["electronics"] ? (
+              filterdata && filterdata.length > 0 ? (
+                filterdata &&
+                filterdata.map((product) => {
+                  return <Productcard key={product?.id} product={product} />;
+                })
+              ) : (
+                <div className="my-60 md:col-span-2 lg:col-span-3">
+                  <img
+                    src="https://img.icons8.com/?size=100&id=12695&format=png&color=000000"
+                    alt=""
+                  />{" "}
+                </div>
+              )
+            ) : fildata && fildata.length > 0 ? (
+              fildata &&
               fildata.map((product) => {
                 return <Productcard key={product?.id} product={product} />;
-              })}
+              })
+            ) : (
+              <div className="my-60 md:col-span-2 lg:col-span-3">
+                <img
+                  src="https://img.icons8.com/?size=100&id=12695&format=png&color=000000"
+                  alt=""
+                />{" "}
+              </div>
+            )}
           </div>
         </div>
       )}
-      <div className="flex justify-between bg-banner h-18">
-        <p className="font-roboto text-3xl pl-3 self-center">
+
+      <div className="flex justify-between light:bg-banner dark:bg-gray-600   h-18">
+        <p className="font-roboto text-3xl pl-3  self-center">
           {" "}
           <Link to="/">EcomFlow </Link>
         </p>

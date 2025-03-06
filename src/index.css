@@ -9,10 +9,14 @@
   --font-roboto: "Iceberg", sans-serif;
   --font-roboto1: "Roboto", sans-serif;
   --font-Sigmar: "Sigmar", sans-serif;
-  --bg-banner: #fff2f2;
-  --bg-banner1: #d6b8b8;
+  --bg-banner: #d3496a;
+  --bg-dark: #181044;
+  --bg-banner1: #c7522a;
 }
 
+.bg-dark {
+  background-color: var(--bg-dark) !important;
+}
 .font-roboto {
   font-family: var(--font-roboto) !important;
 }
@@ -23,7 +27,7 @@
   font-family: var(--font-Sigmar) !important;
 }
 .bg-banner {
-  background-color: var(--bg-banner) !important;
+  background-color: var(--bg-banner);
 }
 .bg-banner1 {
   background-color: var(--bg-banner1) !important;

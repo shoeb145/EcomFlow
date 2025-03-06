@@ -1,7 +1,13 @@
 import React, { useEffect, useState } from "react";
 
 import Cartitem from "../components/Cartitem";
-import { calcSubtotal, format2Decimals, taxAmount, total } from "../utils";
+import {
+  calcSubtotal,
+  format2Decimals,
+  shippingPrice,
+  taxAmount,
+  total,
+} from "../utils";
 import { useNavigate } from "react-router-dom";
 
 function Cart(props) {
@@ -90,10 +96,11 @@ function Cart(props) {
         </svg>
         <h4 className="self-center text-lg w-full  ">Cart</h4>
       </div>
-      {cartdata &&
+      {cartdata && cartdata.length > 0 ? (
+        cartdata &&
         cartdata.map((data) => {
           return (
-            <div key={data.id}>
+            <div key={data.id} className="lg:mx-20 mt-2">
               <Cartitem
                 deleteCartItem={deleteCartItem}
                 decreaseCart={decreaseCart}
@@ -103,16 +110,25 @@ function Cart(props) {
               <hr className="mx-2 text-gray-400 " />
             </div>
           );
-        })}
+        })
+      ) : (
+        <div className="my-30 flex justify-center ">
+          <img
+            src="https://img.icons8.com/?size=100&id=12695&format=png&color=000000"
+            alt=""
+          />
+        </div>
+      )}
 
-      <div className="mt-10 mx-2">
+      <div className="mt-10 mx-2 lg:mx-20">
         <div className="flex justify-between pb-2 ">
           <p className="text-gray-400">Sub total</p>{" "}
           <h4>${format2Decimals(calcSubtotal(cartdata))} </h4>
         </div>
 
         <div className="flex justify-between pb-2 ">
-          <p className="text-gray-400">Shipping</p> <h4>$20</h4>
+          <p className="text-gray-400">Shipping</p>{" "}
+          <h4>${shippingPrice(calcSubtotal(cartdata))}</h4>
         </div>
         <div className="flex justify-between pb-2">
           <p className="text-gray-400">Tax(10%)</p>{" "}

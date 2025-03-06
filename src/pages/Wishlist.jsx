@@ -1,4 +1,5 @@
 import React, { useEffect, useState } from "react";
+import { useNavigate } from "react-router-dom";
 
 function Wishlist(props) {
   const [Wishlist, setWishlist] = useState([]);
@@ -12,7 +13,7 @@ function Wishlist(props) {
       const upgarded = Array.isArray(prevWish) ? [...prevWish] : [prevWish];
 
       const index = upgarded.findIndex((item) => item.id === id);
-      console.log(index, "guys its here");
+
       if (!(index === -1)) {
         upgarded.splice(index, 1);
         localStorage.setItem("Wishlist", JSON.stringify(upgarded));
@@ -20,7 +21,8 @@ function Wishlist(props) {
       }
     });
   }
-  console.log(Wishlist, "its here");
+
+  const navigate = useNavigate();
   return (
     <div className="h-screen">
       <div className="flex ">
@@ -30,7 +32,8 @@ function Wishlist(props) {
           viewBox="0 0 24 24"
           strokeWidth={1.5}
           stroke="currentColor"
-          className="size-6 m-4 my-4 w-6"
+          onClick={() => navigate("/")}
+          className="size-6 m-4 my-4 w-6 md:size-7"
         >
           <path
             strokeLinecap="round"
@@ -38,26 +41,28 @@ function Wishlist(props) {
             d="M10.5 19.5 3 12m0 0 7.5-7.5M3 12h18"
           />
         </svg>
-        <h4 className="self-center text-lg w-full  ">Wishlist </h4>
+        <h4 className="self-center text-lg w-full md:text-xl ">Wishlist </h4>
       </div>
-      {Wishlist &&
+      {Wishlist && Wishlist.length > 0 ? (
+        Wishlist &&
         Wishlist.map((product) => {
           return (
-            <div key={product.id} className="flex justify-center mb-4 ">
-              <div className=" flex flex-col justify-center rounded-md  ml-4 h-34 min-w-30    shadow-2xl items-center ">
+            <div
+              key={product.id}
+              className="flex justify-center md:mb-8 mb-4 mt-5 "
+            >
+              <div className=" flex flex-col justify-center rounded-md  ml-4 h-34 md:h-40 min-w-30    shadow-2xl items-center md:w-60  dark:opacity-70  dark:bg-gray-50">
                 <figure className=" ">
                   <img
-                    className="size-25 object-contain self-center my-auto "
+                    className="size-25 md:size-30 object-contain self-center my-auto "
                     src={product.image}
                     alt=""
                   />
                 </figure>
               </div>
-              <div className="pl-2 flex flex-col justify-center">
-                <div className="flex ">
-                  <h4 className=" font-bold text-base ">
-                    Fjallraven - Foldsack No. 1 Backpack, Fits 15 Laptops
-                  </h4>
+              <div className="pl-2 md:pl-6 flex flex-col md:w-90 w-70 justify-center">
+                <div className="flex justify-between">
+                  <h4 className=" font-bold text-base ">{product.title}</h4>
 
                   <svg
                     xmlns="http://www.w3.org/2000/svg"
@@ -66,7 +71,7 @@ function Wishlist(props) {
                     strokeWidth="1.5"
                     stroke="currentColor"
                     onClick={() => deleteItem(product.id)}
-                    className="size-5 ml-0.5 mr-2 text-gray-500 shrink-0"
+                    className="size-5 ml-0.5 mr-2 text-gray-500 shrink-0 self-center md:ml-5 fill-red-400"
                   >
                     <path
                       strokeLinecap="round"
@@ -77,12 +82,20 @@ function Wishlist(props) {
                 </div>
 
                 <div className="flex justify-end mr-2 mt-5">
-                  <h3 className="font-bold">$23.99</h3>
+                  <h3 className="font-bold">${product?.price}</h3>
                 </div>
               </div>
             </div>
           );
-        })}
+        })
+      ) : (
+        <div className="my-60 flex w-full justify-center">
+          <img
+            src="https://img.icons8.com/?size=100&id=12695&format=png&color=000000"
+            alt=""
+          />
+        </div>
+      )}
     </div>
   );
 }

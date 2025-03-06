@@ -18,13 +18,16 @@ export const taxAmount = (data) => {
 export function format2Decimals(str) {
   return parseFloat(str).toFixed(2);
 }
+export function shippingPrice(value) {
+  return value > 0 ? 20 : 0;
+}
 
 export const total = (data) => {
   let subTotal = calcSubtotal(data);
 
   let taxAmounts = taxAmount(calcSubtotal(data));
 
-  let shipping = 20;
+  let shipping = shippingPrice(data);
   let total = subTotal + taxAmounts + shipping;
 
   return total;
