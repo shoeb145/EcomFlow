@@ -2,6 +2,11 @@ import React, { useState } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
 import Wishlist from "./Wishlist";
 import { useEffect } from "react";
+import toast, { Toaster } from "react-hot-toast";
+
+const notify = () => toast("Added to cart! 🎉 Get ready to check out!");
+const notifyWish = () =>
+  toast("Added to Wishlist! ⭐ One step closer to making it yours!");
 
 function ProductDetail({}) {
   const [wishlist, setWishlist] = useState([]);
@@ -14,11 +19,12 @@ function ProductDetail({}) {
   const product = location.state;
 
   const addWishlist = (product) => {
+    notifyWish();
     setWishlist((prevWish) => {
       const upgarded = Array.isArray(prevWish) ? [...prevWish] : [prevWish];
 
       const index = upgarded.findIndex((item) => item.id === product.id);
-      console.log(index, "guys its here");
+
       if (!(index === -1)) {
         upgarded.splice(index, 1);
         localStorage.setItem("Wishlist", JSON.stringify(upgarded));
@@ -35,6 +41,7 @@ function ProductDetail({}) {
 
   const handleCart = (id) => {
     if (id == "") return;
+    notify();
     setCartdata((prevCart) => {
       let updatedCart = Array.isArray(prevCart) ? [...prevCart] : [];
 
@@ -79,6 +86,7 @@ function ProductDetail({}) {
 
   return (
     <div className="h-[calc(100vh-15px)]  ">
+      <Toaster />
       <svg
         xmlns="http://www.w3.org/2000/svg"
         fill="none"
