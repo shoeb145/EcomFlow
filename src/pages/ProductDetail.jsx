@@ -19,7 +19,6 @@ function ProductDetail({}) {
   const product = location.state;
 
   const addWishlist = (product) => {
-    notifyWish();
     setWishlist((prevWish) => {
       const upgarded = Array.isArray(prevWish) ? [...prevWish] : [prevWish];
 
@@ -35,8 +34,12 @@ function ProductDetail({}) {
 
       upgarded.push({ ...product });
       localStorage.setItem("Wishlist", JSON.stringify(upgarded));
+
       return upgarded;
     });
+    if (!Buttonactive) {
+      notifyWish();
+    }
   };
 
   const handleCart = (id) => {
