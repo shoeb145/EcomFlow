@@ -3,12 +3,32 @@ import { useLocation, useNavigate } from "react-router-dom";
 import Wishlist from "./Wishlist";
 import { useEffect } from "react";
 import toast, { Toaster } from "react-hot-toast";
+import axios from "axios";
+import { useParams } from "react-router-dom";
 
 const notify = () => toast("Added to cart! 🎉 Get ready to check out!");
 const notifyWish = () =>
   toast("Added to Wishlist! ⭐ One step closer to making it yours!");
 
 function ProductDetail({}) {
+  const [data, setData] = useState([]);
+
+  useEffect(() => {
+    if (productData) {
+      return;
+    }
+    async function fetchData() {
+      try {
+        const res = await axios.get("https://fakestoreapi.com/products");
+        setData(res.data);
+      } catch (err) {
+        console.log(err);
+      }
+    }
+    fetchData();
+  }, []);
+  let { id } = useParams();
+  console.log(id, "hello");
   const [wishlist, setWishlist] = useState([]);
   const [cartdata, setCartdata] = useState([]);
   const [Buttonactive, setButtonactive] = useState(false);
@@ -16,7 +36,11 @@ function ProductDetail({}) {
   const location = useLocation();
   const navigate = useNavigate();
 
-  const product = location.state;
+  const productData = location.state;
+
+  console.log(id);
+  const product = productData ? productData[id - 1] : data[id - 1];
+  console.log(product);
 
   const addWishlist = (product) => {
     setWishlist((prevWish) => {
@@ -110,7 +134,7 @@ function ProductDetail({}) {
           <figure className=" max-w-xs self-center lg:flex lg:justify-center lg:h-100">
             <img
               className="size-60 md:size-80 object-contain self-center"
-              src={product.image}
+              src={product?.image}
               alt=""
             />
           </figure>
@@ -118,16 +142,16 @@ function ProductDetail({}) {
         <div className="lg:flex lg:flex-col lg:justify-center lg:self-center  gap-30">
           <div className="mx-6 md:mx-10 ">
             <h4 className=" font-extrabold text-2xl lg:text-5xl">
-              {product.title}
+              {product?.title}
             </h4>
             <p className=" pt-5 font-semibold lg:text-xl">Description</p>
-            <p className="py-3 font-medium text-lg ">{product.description}</p>
+            <p className="py-3 font-medium text-lg ">{product?.description}</p>
           </div>
 
           <div className="flex  justify-between pr-4 md:mx-4 pl-6 pb-6  ">
             <div className="flex flex-col justify-center">
               <p className="text-sm text-gray-400">Price</p>{" "}
-              <h3 className="font-bold">$ {product.price}</h3>
+              <h3 className="font-bold">$ {product?.price}</h3>
             </div>
             <div className="flex ">
               <svg

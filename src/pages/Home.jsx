@@ -47,7 +47,9 @@ function Home(props) {
       <div className=" py-3 pb-0 mb-0 mx-5  flex flex-col lg:grid-cols-3 lg:grid items-center lg:place-items-center md:grid md:grid-cols-2 md:place-items-center mt-2">
         {data && data ? (
           data.map((product) => {
-            return <Productcard key={product?.id} product={product} />;
+            return (
+              <Productcard key={product?.id} product={product} data={data} />
+            );
           })
         ) : (
           <div className="h-screen flex mt-4 mx-auto w-100 text-2xl">
